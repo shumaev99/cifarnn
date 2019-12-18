@@ -2,7 +2,7 @@ import numpy as np
 import pickle
 import os
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten, Conv2D, MaxPooling2D
+from keras.layers import Dense, Dropout, Activation, Flatten, Conv2D, MaxPooling2D, BatchNormalization
 from keras.utils import np_utils
 from keras.models import model_from_json
 from sklearn.model_selection import train_test_split as split
@@ -68,11 +68,15 @@ def train_save(epochs=30, jsonfile="model.json", weightfile="model.h5"):
     nclasses = len(classes)
     # слои моей модели
     layers = [("Conv2D", {"filters":32, "kernel_size":(3,3), "strides":(1,1), "activation":"relu", "input_shape":X.shape[1:], "padding":"same"}),
+              ("BatchNormalization", {}),
               ("Conv2D", {"filters":32, "kernel_size":(3,3), "strides":(1,1), "activation":"relu", "padding":"same"}),
               ("MaxPooling2D", {"pool_size":(2,2), "padding":"same"}),
+              ("BatchNormalization", {}),
               ("Dropout", {"rate":0.5}),
               ("Conv2D", {"filters":64, "kernel_size":(3,3), "strides":(1,1), "activation":"relu", "padding":"same"}),
+              ("BatchNormalization", {}),
               ("Conv2D", {"filters":64, "kernel_size":(3,3), "strides":(1,1), "activation":"relu", "padding":"same"}),
+              ("BatchNormalization", {}),
               ("MaxPooling2D", {"pool_size":(2,2), "padding":"same"}),
               ("Dropout", {"rate":0.5}),
               ("Flatten", {}),
@@ -106,7 +110,7 @@ def restore_model(jsonfile="model.json", weightfile="model.h5", loss='categorica
 
 if __name__ == '__main__':
     # запусти это первый раз, потом закомментируй (тренировка и сохранение модели)
-    model = train_save(epochs=3)
+    model = train_save(epochs=30)
     # если модель уже натренирована и сохранена, закомментируй предыдущую строчку и раскомментируй эту
     #model = restore_model()
     # пример распознавания картинки
